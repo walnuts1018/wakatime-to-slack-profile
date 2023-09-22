@@ -176,7 +176,7 @@ func (c *client) NowLanguage(ctx context.Context) (string, error) {
 	}
 
 	l := languages.Data[len(languages.Data)-1]
-	t := time.Unix(int64(math.Floor(l.Time)), 0)
+	t := time.Unix(int64(math.Floor(l.Time+l.Duration)), 0)
 	if t.Before(timeJST.Now().Add(-10 * time.Minute)) {
 		slog.Warn("last language is too old", "lastLanguage", l.Language, "lastTime", t)
 		return "", nil
