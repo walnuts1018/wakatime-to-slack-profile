@@ -33,7 +33,7 @@ func LoadConfig() error {
 	serverport := flag.String("port", "8080", "server port")
 	flag.Parse()
 	Config.ServerPort = *serverport
-	Config.ServerURL = fmt.Sprintf("http://localhost:%v/", Config.ServerPort)
+	Config.ServerURL = "https://wakatime.walnuts.dev/"
 
 	err := godotenv.Load(".env")
 	if err != nil {
