@@ -26,9 +26,6 @@ func NewHandler(usecase *usecase.Usecase) (*gin.Engine, error) {
 
 	r.GET("/signin", signIn)
 	r.GET("/callback", callback)
-	r.GET("/languages", func(ctx *gin.Context) {
-		uc.Languages(ctx)
-	})
 
 	return r, nil
 }

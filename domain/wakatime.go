@@ -17,7 +17,8 @@ type WakatimeClient interface {
 	Auth(state string) string
 	Callback(ctx context.Context, code string) (OAuth2Token, error)
 	SetToken(ctx context.Context, tokenStore TokenStore) error
-	Languages(ctx context.Context) ([]Language, error)
+	ListLanguages(ctx context.Context) ([]Language, error)
+	NowLanguage(ctx context.Context) (string, error)
 }
 
 type Language struct {

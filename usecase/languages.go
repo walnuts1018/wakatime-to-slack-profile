@@ -5,11 +5,22 @@ import (
 	"fmt"
 )
 
-func (u *Usecase) Languages(ctx context.Context) error {
-	langs, err := u.wakatimeClient.Languages(ctx)
+func (u *Usecase) SetLanguage(ctx context.Context) error {
+	language, err := u.wakatimeClient.NowLanguage(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get now language: %w", err)
 	}
-	fmt.Printf("%#v\n", langs)
+
+	if u.lastLanguage != nil {
+		if *u.lastLanguage == language {
+			return nil
+		}
+	}
+
+	err = u.SetUserCustomStatus(language)
+	if err != nil {
+		return fmt.Errorf("failed to set user custom status: %w", err)
+	}
+	u.lastLanguage = &language
 	return nil
 }

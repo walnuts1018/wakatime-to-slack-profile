@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/walnuts1018/wakatime-to-slack-profile/config"
 	"github.com/walnuts1018/wakatime-to-slack-profile/handler"
 	"github.com/walnuts1018/wakatime-to-slack-profile/infra/psql"
+	"github.com/walnuts1018/wakatime-to-slack-profile/infra/slack"
 	"github.com/walnuts1018/wakatime-to-slack-profile/infra/wakatime"
 	"github.com/walnuts1018/wakatime-to-slack-profile/usecase"
 )
@@ -32,11 +34,37 @@ func main() {
 
 	wakatimeClient := wakatime.NewOauth2Client()
 
-	usecase := usecase.NewUsecase(wakatimeClient, psqClient)
+	slackClient := slack.NewClient()
+
+	usecase := usecase.NewUsecase(wakatimeClient, psqClient, slackClient)
 	err = usecase.SetToken(ctx)
 	if err != nil {
 		slog.Warn("failed to set token", "error", err)
 	}
+
+	go func() {
+		err := usecase.SetLanguage(ctx)
+		if err != nil {
+			slog.Error("Failed to set language", "error", err)
+			return
+		}
+
+		ticker := time.NewTicker(5 * time.Minute)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				err := usecase.SetLanguage(ctx)
+				if err != nil {
+					slog.Error("Failed to set language", "error", err)
+					return
+				}
+			}
+		}
+	}()
 
 	handler, err := handler.NewHandler(usecase)
 	if err != nil {

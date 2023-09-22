@@ -24,6 +24,7 @@ type Config_t struct {
 	SlackAccessToken string `env:"SLACK_ACCESS_TOKEN"`
 
 	ServerPort string
+	ServerURL  string
 }
 
 var Config = Config_t{}
@@ -32,6 +33,7 @@ func LoadConfig() error {
 	serverport := flag.String("port", "8080", "server port")
 	flag.Parse()
 	Config.ServerPort = *serverport
+	Config.ServerURL = fmt.Sprintf("http://localhost:%v/", Config.ServerPort)
 
 	err := godotenv.Load(".env")
 	if err != nil {
