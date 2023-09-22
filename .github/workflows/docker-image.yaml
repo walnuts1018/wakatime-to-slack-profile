@@ -6,7 +6,7 @@ on:
   
 jobs:
   ImageBuild:
-    name: Build Wakatime-to-slack-status Custom Docker Image (amd64 & arm64)
+    name: Build Wakatime-to-slack-profile Custom Docker Image (amd64 & arm64)
     runs-on: ubuntu-latest
     steps:
       - name: Slack notification of build start
@@ -16,7 +16,7 @@ jobs:
           SLACK_USERNAME: GitHub Actions
           SLACK_COLOR: "#4381de"
           SLACK_ICON: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-          SLACK_TITLE: Start Wakatime-to-slack-status image build 
+          SLACK_TITLE: Start Wakatime-to-slack-profile image build 
           SLACK_MESSAGE: |
             Run number : #${{ github.run_number }}
           
@@ -57,8 +57,8 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           tags: |
-            ghcr.io/walnuts1018/wakatime-to-slack-status:latest
-            ghcr.io/walnuts1018/wakatime-to-slack-status:${{ env.ImageTag }}
+            ghcr.io/walnuts1018/wakatime-to-slack-profile:latest
+            ghcr.io/walnuts1018/wakatime-to-slack-profile:${{ env.ImageTag }}
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v4.0.0
@@ -68,8 +68,8 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           tags: |
-            ghcr.io/walnuts1018/wakatime-to-slack-status:test-latest
-            ghcr.io/walnuts1018/wakatime-to-slack-status:test-${{ github.sha }}-${{ github.run_number }}
+            ghcr.io/walnuts1018/wakatime-to-slack-profile:test-latest
+            ghcr.io/walnuts1018/wakatime-to-slack-profile:test-${{ github.sha }}-${{ github.run_number }}
 
   SucceessNotification:
     if: ${{ success() }}
@@ -83,7 +83,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_USERNAME: GitHub Actions
           SLACK_ICON: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-          SLACK_TITLE: Wakatime-to-slack-status id:mage build succeeded
+          SLACK_TITLE: Wakatime-to-slack-profile id:mage build succeeded
           SLACK_MESSAGE: |
             Run number : #${{ github.run_number }}
             Image tag : ${{ github.sha }}-${{ github.run_number }}
@@ -101,6 +101,6 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_USERNAME: GitHub Actions
           SLACK_ICON: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-          SLACK_TITLE: Wakatime-to-slack-status image build failed
+          SLACK_TITLE: Wakatime-to-slack-profile image build failed
           SLACK_COLOR: danger
           SLACK_MESSAGE: 'Run number : #${{ github.run_number }}'
