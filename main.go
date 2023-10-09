@@ -46,7 +46,7 @@ func main() {
 		err := usecase.SetLanguage(ctx)
 		if err != nil {
 			slog.Error("Failed to set language", "error", err)
-			return
+			os.Exit(1)
 		}
 
 		ticker := time.NewTicker(1 * time.Minute)
@@ -55,12 +55,13 @@ func main() {
 		for {
 			select {
 			case <-ctx.Done():
-				return
+				slog.Info("context done")
+				os.Exit(0)
 			case <-ticker.C:
 				err := usecase.SetLanguage(ctx)
 				if err != nil {
 					slog.Error("Failed to set language", "error", err)
-					return
+					os.Exit(1)
 				}
 			}
 		}
