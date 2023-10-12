@@ -66,7 +66,8 @@ docker run -p 8080:8080 ghcr.io/walnuts1018/wakatime-to-slack-profile:latest
 
 Wakatimeのログイン画面が開くので、ログインしてください。
 
-Success!という画面に戻ってきたらブラウザを閉じてください。
+以下のような画面に戻ってきたらブラウザを閉じてください。
+![image](https://github.com/walnuts1018/wakatime-to-slack-profile/assets/60650857/e465af21-2dce-4d7f-8d58-8ad560ec9ef6)
 
 以降はTokenがPostgreSQLに保存されるので、手動でのログイン作業は必要ありません。
 
