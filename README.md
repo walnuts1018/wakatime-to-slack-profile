@@ -14,6 +14,9 @@
 ### PostgreSQL
 いい感じに用意してください。
 
+### Wakatime API
+いい感じに頑張ってApp IDとSecretを用意してください。
+
 ### 環境変数
 |env|sample|detail|
 | --- | --- | --- |
