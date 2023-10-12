@@ -58,7 +58,13 @@ docker run -p 8080:8080 ghcr.io/walnuts1018/wakatime-to-slack-profile:latest
 
 ### ログイン
 初回起動時にはブラウザでのログインが必要です。
-ブラウザで [http://localhost:8080/signin](http://localhost:8080/signin) を開きます（他のURLで公開している場合は適宜指定してください。）
 
+ブラウザで [http://localhost:8080/signin](http://localhost:8080/signin) を開きます。（他のURLで公開している場合は適宜指定してください。）
+
+Wakatimeのログイン画面が開くので、ログインしてください。
+
+Success!という画面に戻ってきたらブラウザを閉じてください。
+
+以降はTokenがPostgreSQLに保存されるので、手動でのログイン作業は必要ありません。
 
 
