@@ -51,7 +51,10 @@
 
 の順番に探されます。
 
-また、過去十分間にコードを書いた履歴がない場合は🦥になります。
+また、過去十分間にコードを書いていない場合は🦥になります。
+
+![image](https://github.com/walnuts1018/wakatime-to-slack-profile/assets/60650857/45371654-b08a-4b03-a171-b4f736f01c93)
+
 
 ### Start with Docker
 対応arch: `amd64`, `arm64`
