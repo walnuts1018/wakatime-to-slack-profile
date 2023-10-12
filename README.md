@@ -33,7 +33,7 @@
 
 ### emoji.jsonを用意
 
-`emoji.json`はSlackの絵文字名と言語名が対応していない場合に手動で指定するためのファイルです。
+`emoji.json`は手動で言語とSlack絵文字との対応付けを行うためのファイルです。
 
 実行パスに配置
 `Wakatimeにおける言語名`: `Slackの絵文字ID`
