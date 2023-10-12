@@ -44,16 +44,21 @@
 
 絵文字は、
 
-`emoji.jsonでの手動指定→言語名そのまま→言語名を全て小文字にしたもの→(絵文字が見つからなかった場合)❓`
+`emoji.jsonでの手動指定`→`言語名そのまま`→`言語名を全て小文字にしたもの`→`(絵文字が見つからなかった場合)❓`
 
 の順番に探されます。
 
 また、過去十分間にコードを書いた履歴がない場合は🦥になります。
 
 ### Start with Docker
-対応arch: `amd64`,`arm64`
+対応arch: `amd64`, `arm64`
 ```bash
 docker run -p 8080:8080 ghcr.io/walnuts1018/wakatime-to-slack-profile:latest
 ```
 
 ### ログイン
+初回起動時にはブラウザでのログインが必要です。
+ブラウザで [http://localhost:8080/signin](http://localhost:8080/signin) を開きます（他のURLで公開している場合は適宜指定してください。）
+
+
+
