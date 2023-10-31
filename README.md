@@ -4,6 +4,7 @@
 [![Go Report](https://goreportcard.com/badge/github.com/walnuts1018/wakatime-to-slack-profile)](https://goreportcard.com/report/github.com/walnuts1018/wakatime-to-slack-profile)
 ![Last Image Build](https://github.com/walnuts1018/wakatime-to-slack-profile/actions/workflows/docker-image.yaml/badge.svg)
 [![Latest Image](https://ghcr-badge.egpl.dev/walnuts1018/wakatime-to-slack-profile/latest_tag?trim=major&label=Latest%20Docker%20Image&color=ROYALBLUE&ignore=test-*)](https://ghcr-badge.egpl.dev/walnuts1018/wakatime-to-slack-profile/latest_tag?trim=major&label=Latest%20Docker%20Image&color=ROYALBLUE&ignore=test-*)
+[![wakatime](https://wakatime.com/badge/user/981e52dd-a7ab-4b00-9a71-125be9dc2de6/project/e5ad1019-15d4-4a5a-92ee-e10dd9b87ba6.svg)](https://wakatime.com/badge/user/981e52dd-a7ab-4b00-9a71-125be9dc2de6/project/e5ad1019-15d4-4a5a-92ee-e10dd9b87ba6)
 
 このプログラムは、Wakatime経由でユーザーが現在書いているコードを取得し、Slackのカスタムステータスに絵文字として設定するプログラムです。
 
