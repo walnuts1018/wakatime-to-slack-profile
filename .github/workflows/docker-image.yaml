@@ -3,10 +3,10 @@ on:
   release:
     types: [published]
   workflow_dispatch:
-  
+
 jobs:
   ImageBuild:
-    name: Build Wakatime-to-slack-profile Custom Docker Image 
+    name: Build Wakatime-to-slack-profile Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Slack notification of build start
@@ -16,10 +16,10 @@ jobs:
           SLACK_USERNAME: GitHub Actions
           SLACK_COLOR: "#4381de"
           SLACK_ICON: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-          SLACK_TITLE: Start Wakatime-to-slack-profile image build 
+          SLACK_TITLE: Start Wakatime-to-slack-profile image build
           SLACK_MESSAGE: |
             Run number : #${{ github.run_number }}
-          
+
       - name: Check out
         uses: actions/checkout@v3
 
@@ -43,10 +43,10 @@ jobs:
           key: ${{ runner.os }}-buildx
           restore-keys: |
             ${{ runner.os }}-buildx
-      
+
       - name: Get Tag from Release
         run: echo "ImageTag=${GITHUB_REF##*/}" >> $GITHUB_ENV
-       
+
       - name: Build and push Docker images
         uses: docker/build-push-action@v4.0.0
         if: github.event_name == 'release'
@@ -83,12 +83,12 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_USERNAME: GitHub Actions
           SLACK_ICON: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-          SLACK_TITLE: Wakatime-to-slack-profile id:mage build succeeded
+          SLACK_TITLE: Wakatime-to-slack-profile image build succeeded
           SLACK_MESSAGE: |
             Run number : #${{ github.run_number }}
             Image tag : ${{ github.sha }}-${{ github.run_number }}
-            Image URL : 
-           
+            Image URL :
+
   FailureAlert:
     if: ${{ failure() }}
     name: Notify failure
@@ -103,4 +103,4 @@ jobs:
           SLACK_ICON: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
           SLACK_TITLE: Wakatime-to-slack-profile image build failed
           SLACK_COLOR: danger
-          SLACK_MESSAGE: 'Run number : #${{ github.run_number }}'
+          SLACK_MESSAGE: "Run number : #${{ github.run_number }}"
