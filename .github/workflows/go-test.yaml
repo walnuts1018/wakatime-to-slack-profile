@@ -1,8 +1,10 @@
 name: Go Tests
 on:
- push:
- pull_request:
- workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
 
@@ -17,7 +19,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v4
         with:
-          go-version: '~1.21.0'
+          go-version: "~1.21.0"
           cache: true
           cache-dependency-path: go.sum
 
