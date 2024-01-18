@@ -23,8 +23,10 @@ func (c *client) SetUserCustomStatus(emoji string, text string) error {
 	if !(strings.HasPrefix(emoji, ":") && strings.HasSuffix(emoji, ":")) {
 		emoji = ":" + emoji + ":"
 	}
-
-	err := c.slackClient.SetUserCustomStatus(fmt.Sprintf("now coding: %v", text), emoji, 0)
+	if text != "" {
+		text = fmt.Sprintf("now coding: %v", text)
+	}
+	err := c.slackClient.SetUserCustomStatus(text, emoji, 0)
 	if err != nil {
 		return fmt.Errorf("error setting status: %w", err)
 	}
