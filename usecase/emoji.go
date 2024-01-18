@@ -8,7 +8,7 @@ import (
 
 func (u *Usecase) SetUserCustomStatus(language string) error {
 	if language == "" {
-		err := u.slackClient.SetUserCustomStatus("namakemono")
+		err := u.slackClient.SetUserCustomStatus("namakemono", "")
 		if err == nil {
 			slog.Info("set user custom status", "emoji", "🦥", "language", language)
 			return nil
@@ -17,25 +17,25 @@ func (u *Usecase) SetUserCustomStatus(language string) error {
 
 	override, ok := u.emojiOverides[language]
 	if ok {
-		err := u.slackClient.SetUserCustomStatus(override)
+		err := u.slackClient.SetUserCustomStatus(override, language)
 		if err == nil {
 			slog.Info("set user custom status", "emoji", override, "language", language)
 			return nil
 		}
 	}
 
-	err := u.slackClient.SetUserCustomStatus(language)
+	err := u.slackClient.SetUserCustomStatus(language, language)
 	if err == nil {
 		slog.Info("set user custom status", "emoji", language)
 		return nil
 	}
-	err = u.slackClient.SetUserCustomStatus(strings.ToLower(language))
+	err = u.slackClient.SetUserCustomStatus(strings.ToLower(language), language)
 	if err == nil {
 		slog.Info("set user custom status", "emoji", language)
 		return nil
 	}
 
-	err = u.slackClient.SetUserCustomStatus("question")
+	err = u.slackClient.SetUserCustomStatus("question", language)
 	if err == nil {
 		slog.Info("set user custom status", "emoji", "❓", "language", language)
 		return nil

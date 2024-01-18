@@ -36,7 +36,7 @@ func main() {
 
 	slackClient := slack.NewClient()
 
-	usecase := usecase.NewUsecase(wakatimeClient, psqClient, slackClient)
+	usecase := usecase.NewUsecase(wakatimeClient, psqClient, slackClient, map[string]string{})
 	err = usecase.SetToken(ctx)
 	if err != nil {
 		slog.Warn("failed to set token", "error", err)
