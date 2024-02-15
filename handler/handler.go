@@ -8,6 +8,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	sloggin "github.com/samber/slog-gin"
 	"github.com/walnuts1018/wakatime-to-slack-profile/config"
 	"github.com/walnuts1018/wakatime-to-slack-profile/usecase"
 )
@@ -16,10 +17,14 @@ var (
 	uc *usecase.Usecase
 )
 
-func NewHandler(usecase *usecase.Usecase) (*gin.Engine, error) {
+func NewHandler(cfg config.Config, usecase *usecase.Usecase, logger *slog.Logger) (*gin.Engine, error) {
 	uc = usecase
+	gin.SetMode(setGinMode(cfg.LogLevel))
+
 	r := gin.Default()
-	store := cookie.NewStore([]byte(config.Config.CookieSecret))
+	r.Use(sloggin.New(logger))
+
+	store := cookie.NewStore([]byte(cfg.CookieSecret))
 	r.Use(sessions.Sessions("WakatimeToSlack", store))
 	r.Static("/assets", "./assets")
 	r.LoadHTMLGlob("templates/*")
@@ -28,6 +33,21 @@ func NewHandler(usecase *usecase.Usecase) (*gin.Engine, error) {
 	r.GET("/callback", callback)
 
 	return r, nil
+}
+
+func setGinMode(level slog.Level) string {
+	switch level {
+	case slog.LevelDebug:
+		return gin.DebugMode
+	case slog.LevelInfo:
+		return gin.ReleaseMode
+	case slog.LevelWarn:
+		return gin.ReleaseMode
+	case slog.LevelError:
+		return gin.ReleaseMode
+	default:
+		return gin.ReleaseMode
+	}
 }
 
 func signIn(ctx *gin.Context) {

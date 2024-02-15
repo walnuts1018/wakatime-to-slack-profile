@@ -2,15 +2,17 @@ package domain
 
 import (
 	"context"
-	"time"
+
+	"github.com/Code-Hex/synchro"
+	"github.com/Code-Hex/synchro/tz"
 )
 
 type OAuth2Token struct {
 	AccessToken  string
 	RefreshToken string
-	Expiry       time.Time
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	Expiry       synchro.Time[tz.AsiaTokyo]
+	CreatedAt    synchro.Time[tz.AsiaTokyo]
+	UpdatedAt    synchro.Time[tz.AsiaTokyo]
 }
 
 type WakatimeClient interface {

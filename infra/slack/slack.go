@@ -13,9 +13,9 @@ type client struct {
 	slackClient *slack.Client
 }
 
-func NewClient() domain.SlackClient {
+func NewClient(cfg config.Config) domain.SlackClient {
 	return &client{
-		slackClient: slack.New(config.Config.SlackAccessToken),
+		slackClient: slack.New(cfg.SlackAccessToken),
 	}
 }
 

@@ -10,13 +10,13 @@ import (
 
 type Usecase struct {
 	wakatimeClient domain.WakatimeClient
-	tokenStore     domain.TokenStore
+	db             domain.DB
 	slackClient    domain.SlackClient
 	emojiOverides  map[string]string
 	lastLanguage   *string
 }
 
-func NewUsecase(wakatimeClient domain.WakatimeClient, tokenStore domain.TokenStore, slackClient domain.SlackClient, emojiOverides map[string]string) *Usecase {
+func NewUsecase(wakatimeClient domain.WakatimeClient, db domain.DB, slackClient domain.SlackClient, emojiOverides map[string]string) *Usecase {
 	emojis := map[string]string{}
 
 	b, err := os.ReadFile("emoji.json")
@@ -32,7 +32,7 @@ func NewUsecase(wakatimeClient domain.WakatimeClient, tokenStore domain.TokenSto
 
 	return &Usecase{
 		wakatimeClient: wakatimeClient,
-		tokenStore:     tokenStore,
+		db:             db,
 		slackClient:    slackClient,
 		emojiOverides:  emojis,
 	}

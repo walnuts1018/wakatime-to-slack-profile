@@ -11,9 +11,10 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/Code-Hex/synchro"
+	"github.com/Code-Hex/synchro/tz"
 	"github.com/walnuts1018/wakatime-to-slack-profile/config"
 	"github.com/walnuts1018/wakatime-to-slack-profile/domain"
-	"github.com/walnuts1018/wakatime-to-slack-profile/infra/timeJST"
 	"golang.org/x/oauth2"
 )
 
@@ -34,16 +35,21 @@ type client struct {
 	wclient *http.Client
 }
 
-func NewOauth2Client() domain.WakatimeClient {
+func NewOauth2Client(cfg config.Config) (domain.WakatimeClient, error) {
+	url, err := url.JoinPath(cfg.ServerURL, "callback")
+	if err != nil {
+		return nil, fmt.Errorf("failed to join url: %w", err)
+	}
+
 	return &client{
 		cfg: &oauth2.Config{
-			ClientID:     config.Config.WakatimeAppID,
-			ClientSecret: config.Config.WakatimeAppSecret,
+			ClientID:     cfg.WakatimeAppID,
+			ClientSecret: cfg.WakatimeAppSecret,
 			Endpoint:     oauth2.Endpoint{AuthURL: AuthEndpoint, TokenURL: TokenEndpoint},
-			RedirectURL:  config.Config.ServerURL + "callback",
+			RedirectURL:  url,
 			Scopes:       scopes,
 		},
-	}
+	}, nil
 }
 
 func (c *client) Auth(state string) string {
@@ -60,9 +66,9 @@ func (c *client) Callback(ctx context.Context, code string) (domain.OAuth2Token,
 	cfg := domain.OAuth2Token{
 		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
-		Expiry:       token.Expiry,
-		CreatedAt:    timeJST.Now(),
-		UpdatedAt:    timeJST.Now(),
+		Expiry:       synchro.In[tz.AsiaTokyo](token.Expiry),
+		CreatedAt:    synchro.Now[tz.AsiaTokyo](),
+		UpdatedAt:    synchro.Now[tz.AsiaTokyo](),
 	}
 	return cfg, nil
 }
@@ -76,7 +82,7 @@ func (c *client) SetToken(ctx context.Context, tokenStore domain.TokenStore) err
 		AccessToken:  token.AccessToken,
 		TokenType:    "bearer",
 		RefreshToken: token.RefreshToken,
-		Expiry:       token.Expiry,
+		Expiry:       token.Expiry.StdTime(),
 	}
 
 	oldTokenSource := c.cfg.TokenSource(ctx, oauthToken)
@@ -130,9 +136,9 @@ type nowLanguageResponce struct {
 		Project  string  `json:"project"`
 		Time     float64 `json:"time"`
 	} `json:"data"`
-	Start    time.Time `json:"start"`
-	End      time.Time `json:"end"`
-	Timezone string    `json:"timezone"`
+	Start    synchro.Time[tz.AsiaTokyo] `json:"start"`
+	End      synchro.Time[tz.AsiaTokyo] `json:"end"`
+	Timezone string                     `json:"timezone"`
 }
 
 func (c *client) NowLanguage(ctx context.Context) (string, error) {
@@ -145,7 +151,7 @@ func (c *client) NowLanguage(ctx context.Context) (string, error) {
 		return "", fmt.Errorf("failed to parse url: %w", err)
 	}
 	query := endpoint.Query()
-	query.Set("date", timeJST.Now().Format("2006-01-02"))
+	query.Set("date", synchro.Now[tz.AsiaTokyo]().Format("2006-01-02"))
 	query.Set("slice_by", "language")
 	endpoint.RawQuery = query.Encode()
 
@@ -176,9 +182,10 @@ func (c *client) NowLanguage(ctx context.Context) (string, error) {
 	}
 
 	l := languages.Data[len(languages.Data)-1]
-	t := time.Unix(int64(math.Floor(l.Time+l.Duration)), 0)
-	if t.Before(timeJST.Now().Add(-10 * time.Minute)) {
-		slog.Warn("last language is too old", "lastLanguage", l.Language, "lastTime", t)
+	lastTime := synchro.Unix[tz.AsiaTokyo](int64(math.Floor(l.Time+l.Duration)), 0)
+
+	if lastTime.Before(synchro.Now[tz.AsiaTokyo]().Add(-10 * time.Minute)) {
+		slog.Warn("last language is too old", "lastLanguage", l.Language, "lastTime", lastTime)
 		return "", nil
 	}
 	return l.Language, nil

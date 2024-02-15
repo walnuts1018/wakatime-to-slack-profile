@@ -21,7 +21,7 @@ func (u *Usecase) Callback(ctx context.Context, code string) error {
 		return fmt.Errorf("failed to get oauth2 config: %w", err)
 	}
 
-	err = u.tokenStore.SaveOAuth2Token(token)
+	err = u.db.SaveOAuth2Token(token)
 	if err != nil {
 		return fmt.Errorf("failed to save oauth2 token: %w", err)
 	}
@@ -30,7 +30,7 @@ func (u *Usecase) Callback(ctx context.Context, code string) error {
 }
 
 func (u *Usecase) SetToken(ctx context.Context) error {
-	return u.wakatimeClient.SetToken(ctx, u.tokenStore)
+	return u.wakatimeClient.SetToken(ctx, u.db)
 }
 
 func randStr(n int) (string, error) {

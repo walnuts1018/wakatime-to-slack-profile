@@ -17,8 +17,9 @@ type client struct {
 	db *sql.DB
 }
 
-func NewClient() (domain.TokenStore, error) {
-	db, err := sql.Open("postgres", fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=%v", config.Config.PSQLEndpoint, config.Config.PSQLPort, config.Config.PSQLUser, config.Config.PSQLPassword, config.Config.PSQLDatabase, sslMode))
+func NewClient(cfg config.Config) (domain.DB, error) {
+	db, err := sql.Open("postgres", fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=%v", cfg.PSQLEndpoint, cfg.PSQLPort, cfg.PSQLUser, cfg.PSQLPassword, cfg.PSQLDatabase, sslMode))
+
 	if err != nil {
 		return client{}, fmt.Errorf("failed to open db: %v", err)
 	}
@@ -29,23 +30,31 @@ func NewClient() (domain.TokenStore, error) {
 func (c client) Close() error {
 	return c.db.Close()
 }
-func (c client) SaveOAuth2Token(token domain.OAuth2Token) error {
-	_, err := c.db.Exec(`CREATE TABLE IF NOT EXISTS oauth2_config (
+
+func (c client) initDatabase() error {
+	if _, err := c.db.Exec(`CREATE TABLE IF NOT EXISTS oauth2_config (
 		access_token TEXT NOT NULL,
 		refresh_token TEXT NOT NULL,
 		expiry TIMESTAMPTZ NOT NULL,
 		created_at TIMESTAMPTZ NULL,
 		updated_at TIMESTAMPTZ NULL
-	)`)
-	if err != nil {
+	)`); err != nil {
 		return fmt.Errorf("failed to create oauth2_config table: %v", err)
 	}
-	_, err = c.db.Exec("DELETE FROM oauth2_config")
-	if err != nil {
+
+	return nil
+}
+
+func (c client) SaveOAuth2Token(token domain.OAuth2Token) error {
+
+	if err := c.initDatabase(); err != nil {
+		return fmt.Errorf("failed to init database: %v", err)
+	}
+
+	if _, err := c.db.Exec("DELETE FROM oauth2_config"); err != nil {
 		return fmt.Errorf("failed to delete oauth2_config: %v", err)
 	}
-	_, err = c.db.Exec("INSERT INTO oauth2_config (access_token, refresh_token, expiry, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)", token.AccessToken, token.RefreshToken, token.Expiry, token.CreatedAt, token.UpdatedAt)
-	if err != nil {
+	if _, err := c.db.Exec("INSERT INTO oauth2_config (access_token, refresh_token, expiry, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)", token.AccessToken, token.RefreshToken, token.Expiry, token.CreatedAt, token.UpdatedAt); err != nil {
 		return fmt.Errorf("failed to insert oauth2_config: %v", err)
 	}
 	return nil

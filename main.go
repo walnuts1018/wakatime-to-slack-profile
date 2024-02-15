@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/lmittmann/tint"
 	"github.com/walnuts1018/wakatime-to-slack-profile/config"
 	"github.com/walnuts1018/wakatime-to-slack-profile/handler"
 	"github.com/walnuts1018/wakatime-to-slack-profile/infra/psql"
@@ -16,25 +17,35 @@ import (
 )
 
 func main() {
-	err := config.LoadConfig()
+	cfg, err := config.Load()
 	if err != nil {
 		slog.Error("Error loading config", "error", err)
 		os.Exit(1)
 	}
 
+	logger := slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+		TimeFormat: time.RFC3339,
+		Level:      cfg.LogLevel,
+	}))
+	slog.SetDefault(logger)
+
 	ctx, canecel := context.WithCancel(context.Background())
 	defer canecel()
 
-	psqClient, err := psql.NewClient()
+	psqClient, err := psql.NewClient(cfg)
 	if err != nil {
 		slog.Error("Error creating psql client", "error", err)
 		os.Exit(1)
 	}
 	defer psqClient.Close()
 
-	wakatimeClient := wakatime.NewOauth2Client()
+	wakatimeClient, err := wakatime.NewOauth2Client(cfg)
+	if err != nil {
+		slog.Error("Error creating wakatime client", "error", err)
+		os.Exit(1)
+	}
 
-	slackClient := slack.NewClient()
+	slackClient := slack.NewClient(cfg)
 
 	usecase := usecase.NewUsecase(wakatimeClient, psqClient, slackClient, map[string]string{})
 	err = usecase.SetToken(ctx)
@@ -67,13 +78,12 @@ func main() {
 		}
 	}()
 
-	handler, err := handler.NewHandler(usecase)
+	handler, err := handler.NewHandler(cfg, usecase, logger)
 	if err != nil {
 		slog.Error("Error loading handler: %v", "error", err)
 		os.Exit(1)
 	}
-	err = handler.Run(fmt.Sprintf(":%v", config.Config.ServerPort))
-	if err != nil {
+	if err := handler.Run(fmt.Sprintf(":%v", cfg.ServerPort)); err != nil {
 		slog.Error("failed to run handler", "error", err)
 		os.Exit(1)
 	}

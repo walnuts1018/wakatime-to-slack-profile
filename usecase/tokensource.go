@@ -1,14 +1,15 @@
-package wakatime
+package usecase
 
 import (
+	"github.com/Code-Hex/synchro"
+	"github.com/Code-Hex/synchro/tz"
 	"github.com/walnuts1018/wakatime-to-slack-profile/domain"
-	"github.com/walnuts1018/wakatime-to-slack-profile/infra/timeJST"
 	"golang.org/x/oauth2"
 )
 
 type tokenSource struct {
 	src        oauth2.TokenSource
-	tokenStore domain.TokenStore
+	tokenStore domain.DB
 }
 
 func (s *tokenSource) Token() (*oauth2.Token, error) {
@@ -20,8 +21,8 @@ func (s *tokenSource) Token() (*oauth2.Token, error) {
 	token := domain.OAuth2Token{
 		AccessToken:  t.AccessToken,
 		RefreshToken: t.RefreshToken,
-		Expiry:       t.Expiry,
-		UpdatedAt:    timeJST.Now(),
+		Expiry:       synchro.In[tz.AsiaTokyo](t.Expiry),
+		UpdatedAt:    synchro.Now[tz.AsiaTokyo](),
 	}
 
 	err = s.tokenStore.UpdateOAuth2Token(token)
