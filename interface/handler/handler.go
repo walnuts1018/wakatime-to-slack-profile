@@ -8,51 +8,44 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	sloggin "github.com/samber/slog-gin"
 	"github.com/walnuts1018/wakatime-to-slack-profile/config"
 	"github.com/walnuts1018/wakatime-to-slack-profile/usecase"
 )
 
 var (
-	uc *usecase.Usecase
+	uc *usecase.UpdateStatus
 )
 
-func NewHandler(cfg config.Config, usecase *usecase.Usecase, logger *slog.Logger) (*gin.Engine, error) {
-	uc = usecase
-	gin.SetMode(setGinMode(cfg.LogLevel))
+func NewHandler(cfg config.Config, updateStatus *usecase.UpdateStatus) (*gin.Engine, error) {
+	uc = updateStatus
 
 	r := gin.Default()
-	r.Use(sloggin.New(logger))
-
 	store := cookie.NewStore([]byte(cfg.CookieSecret))
 	r.Use(sessions.Sessions("WakatimeToSlack", store))
 	r.Static("/assets", "./assets")
 	r.LoadHTMLGlob("templates/*")
 
-	r.GET("/signin", signIn)
-	r.GET("/callback", callback)
+	r.GET("/", func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusFound, "/slack_signin")
+	})
+	r.GET("/signin", func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusMovedPermanently, "/slack_signin")
+	})
+
+	r.GET("/slack_signin", slackSignIn)
+	r.GET("/slack_callback", callback)
 
 	return r, nil
 }
 
-func setGinMode(level slog.Level) string {
-	switch level {
-	case slog.LevelDebug:
-		return gin.DebugMode
-	case slog.LevelInfo:
-		return gin.ReleaseMode
-	case slog.LevelWarn:
-		return gin.ReleaseMode
-	case slog.LevelError:
-		return gin.ReleaseMode
-	default:
-		return gin.ReleaseMode
-	}
+func slackSignIn(ctx *gin.Context) {
+	redirect := uc.SlackAuth()
+	ctx.Redirect(http.StatusFound, redirect)
 }
 
-func signIn(ctx *gin.Context) {
+func wakatimeSignIn(ctx *gin.Context) {
 	session := sessions.Default(ctx)
-	state, redirect, err := uc.SignIn()
+	state, redirect, err := uc.WakatimeAuth()
 	if err != nil {
 		ctx.HTML(http.StatusInternalServerError, "result.html", gin.H{
 			"result": "error",
