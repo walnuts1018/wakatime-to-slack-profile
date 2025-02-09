@@ -7,7 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	github.com/slack-go/slack v0.15.0
+	github.com/slack-go/slack v0.16.0
 	golang.org/x/oauth2 v0.26.0
 )
 
