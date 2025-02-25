@@ -1,6 +1,8 @@
 module github.com/walnuts1018/wakatime-to-slack-profile
 
-go 1.21
+go 1.23.0
+
+toolchain go1.24.0
 
 require (
 	github.com/gin-contrib/sessions v1.0.2
@@ -8,7 +10,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/slack-go/slack v0.16.0
-	golang.org/x/oauth2 v0.26.0
+	golang.org/x/oauth2 v0.27.0
 )
 
 require (
