@@ -10,7 +10,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/slack-go/slack v0.16.0
-	golang.org/x/oauth2 v0.29.0
+	golang.org/x/oauth2 v0.30.0
 )
 
 require (
