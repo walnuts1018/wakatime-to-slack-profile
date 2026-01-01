@@ -2,7 +2,7 @@ module github.com/walnuts1018/wakatime-to-slack-profile
 
 go 1.23.0
 
-toolchain go1.24.2
+toolchain go1.25.5
 
 require (
 	github.com/gin-contrib/sessions v1.0.2
